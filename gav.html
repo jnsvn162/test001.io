@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гальваника: Сопоставление терминов</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.5;
+            padding: 15px;
+            margin: 0;
+            max-width: 100%;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c5282;
+            text-align: center;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4299e1;
+            font-size: 1.5rem;
+        }
+        
+        .description {
+            background-color: #e6f7ff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .game-area {
+                flex-direction: row;
+            }
+        }
+        
+        .terms-section, .definitions-section {
+            flex: 1;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            padding: 15px;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 15px;
+            text-align: center;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #cbd5e0;
+        }
+        
+        .term-item, .definition-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            font-size: 0.9rem;
+        }
+        
+        .term-item {
+            background-color: #f0fff4;
+            border: 1px solid #c6f6d5;
+            color: #22543d;
+        }
+        
+        .definition-item {
+            background-color: #fffaf0;
+            border: 1px solid #fed7d7;
+            color: #744210;
+            min-height: 80px;
+        }
+        
+        .term-item:hover, .definition-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+        }
+        
+        .term-item.selected {
+            background-color: #48bb78;
+            color: white;
+        }
+        
+        .definition-item.matched {
+            background-color: #c6f6d5;
+            border-color: #48bb78;
+        }
+        
+        .match-info {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        #checkBtn {
+            background-color: #4299e1;
+            color: white;
+        }
+        
+        #checkBtn:hover {
+            background-color: #3182ce;
+        }
+        
+        #resetBtn {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        #resetBtn:hover {
+            background-color: #cbd5e0;
+        }
+        
+        .results {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .success {
+            background-color: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #48bb78;
+        }
+        
+        .score-display {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            color: #2c5282;
+            font-weight: bold;
+        }
+        
+        .term-number {
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Гальваника: Сопоставление терминов</h1>
+        
+        <div class="description">
+            <p>Выберите термин из левой колонки и щелкните на соответствующее определение в правой колонке. После сопоставления всех терминов нажмите кнопку "Проверить результат".</p>
+        </div>
+        
+        <div class="score-display">Правильных ответов: <span id="score">0</span> из 7</div>
+        
+        <div class="game-area">
+            <div class="terms-section">
+                <div class="section-title">Термины</div>
+                <div class="term-item" data-id="1">
+                    <div class="term-number">1</div>
+                    Электролит
+                </div>
+                <div class="term-item" data-id="2">
+                    <div class="term-number">2</div>
+                    Гальваническая ванна
+                </div>
+                <div class="term-item" data-id="3">
+                    <div class="term-number">3</div>
+                    Деталь или заготовка
+                </div>
+                <div class="term-item" data-id="4">
+                    <div class="term-number">4</div>
+                    Анодные пластины
+                </div>
+                <div class="term-item" data-id="5">
+                    <div class="term-number">5</div>
+                    Подводящие штанги или контактные провода
+                </div>
+                <div class="term-item" data-id="6">
+                    <div class="term-number">6</div>
+                    Блескообразователи
+                </div>
+                <div class="term-item" data-id="7">
+                    <div class="term-number">7</div>
+                    Время обработки
+                </div>
+            </div>
+            
+            <div class="definitions-section">
+                <div class="section-title">Определения</div>
+                <div class="definition-item" data-term="3">
+                    Объект, подлежащий покрытию, который в процессе гальванизации выполняет функцию катода. На его поверхности в результате электролиза происходит восстановление катионов металла и формирование металлического покрытия.
+                    <div class="match-info" id="match-1"></div>
+                </div>
+                <div class="definition-item" data-term="4">
+                    Электроды, подключенные к положительному полюсу источника тока. В гальванотехнике обычно выполняются из осаждаемого металла (растворимые аноды). При электролизе они окисляются, компенсируя убыль ионов металла в электролите и обеспечивая равномерное распределение плотности тока в объеме ванны.
+                    <div class="match-info" id="match-2"></div>
+                </div>
+                <div class="definition-item" data-term="5">
+                    Элементы гальванической установки, обеспечивающие подвод электрического тока от источника питания к анодам и катоду (заготовке). Часто совмещают функцию токоподвода с механической фиксацией электродов в заданном положении внутри ванны.
+                    <div class="match-info" id="match-3"></div>
+                </div>
+                <div class="definition-item" data-term="1">
+                    Водный раствор, содержащий ионы осаждаемого металла (например, меди), кислотные или щелочные компоненты для обеспечения ионной проводимости, а часто и специфические добавки. Этот раствор служит проводящей средой для переноса металла с анода на катод в процессе электролиза при нанесении гальванического покрытия.
+                    <div class="match-info" id="match-4"></div>
+                </div>
+                <div class="definition-item" data-term="6">
+                    Специальные добавки. Обеспечивают более гладкое покрытие, вплоть до зеркальной поверхности.
+                    <div class="match-info" id="match-5"></div>
+                </div>
+                <div class="definition-item" data-term="2">
+                    Диэлектрическая емкость с электролитом, в которой происходит реакция гальванизации.
+                    <div class="match-info" id="match-6"></div>
+                </div>
+                <div class="definition-item" data-term="7">
+                    Временной интервал, в течение которого на заготовку (катод) подается электрический ток в присутствии электролита. Этот параметр напрямую определяет толщину формируемого металлического покрытия при заданной плотности тока.
+                    <div class="match-info" id="match-7"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="checkBtn">Проверить результат</button>
+            <button id="resetBtn">Начать заново</button>
+        </div>
+        
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const terms = document.querySelectorAll('.term-item');
+            const definitions = document.querySelectorAll('.definition-item');
+            const checkBtn = document.getElementById('checkBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const resultsDiv = document.getElementById('results');
+            const scoreSpan = document.getElementById('score');
+            
+            let selectedTerm = null;
+            let matches = {};
+            let score = 0;
+            
+            // Инициализация состояния совпадений
+            definitions.forEach(def => {
+                matches[def.dataset.term] = null;
+            });
+            
+            // Выбор термина
+            terms.forEach(term => {
+                term.addEventListener('click', function() {
+                    // Снимаем выделение с предыдущего выбранного термина
+                    terms.forEach(t => t.classList.remove('selected'));
+                    
+                    // Выделяем текущий термин
+                    this.classList.add('selected');
+                    selectedTerm = this;
+                    
+                    // Показываем подсказку
+                    showHint('Теперь выберите определение для этого термина');
+                });
+            });
+            
+            // Выбор определения для сопоставления с термином
+            definitions.forEach(definition => {
+                definition.addEventListener('click', function() {
+                    if (!selectedTerm) {
+                        showHint('Сначала выберите термин из левой колонки');
+                        return;
+                    }
+                    
+                    const termId = selectedTerm.dataset.id;
+                    const definitionId = this.dataset.term;
+                    
+                    // Удаляем предыдущее сопоставление для этого термина
+                    const matchInfoElements = document.querySelectorAll('.match-info');
+                    matchInfoElements.forEach(el => {
+                        if (el.textContent.includes(selectedTerm.textContent.trim())) {
+                            el.textContent = '';
+                        }
+                    });
+                    
+                    // Убираем класс matched у всех определений, которые были сопоставлены с этим термином
+                    definitions.forEach(def => {
+                        const matchInfo = def.querySelector('.match-info');
+                        if (matchInfo.textContent.includes(selectedTerm.textContent.trim())) {
+                            def.classList.remove('matched');
+                            matchInfo.textContent = '';
+                        }
+                    });
+                    
+                    // Добавляем сопоставление
+                    const matchInfo = this.querySelector('.match-info');
+                    matchInfo.textContent = '→ Сопоставлено с: ' + selectedTerm.textContent.trim();
+                    this.classList.add('matched');
+                    
+                    // Сохраняем соответствие
+                    matches[definitionId] = termId;
+                    
+                    // Снимаем выделение с термина
+                    selectedTerm.classList.remove('selected');
+                    selectedTerm = null;
+                    
+                    // Обновляем счет
+                    updateScore();
+                    
+                    showHint('Термин сопоставлен. Выберите следующий термин');
+                });
+            });
+            
+            // Функция обновления счета
+            function updateScore() {
+                let correctCount = 0;
+                
+                definitions.forEach(def => {
+                    const correctTermId = def.dataset.term;
+                    const matchedTermId = matches[correctTermId];
+                    
+                    if (matchedTermId && matchedTermId === correctTermId) {
+                        correctCount++;
+                    }
+                });
+                
+                score = correctCount;
+                scoreSpan.textContent = score;
+                
+                return correctCount;
+            }
+            
+            // Функция проверки результатов
+            function checkResults() {
+                const totalCorrect = updateScore();
+                const totalDefinitions = definitions.length;
+                
+                resultsDiv.style.display = 'block';
+                
+                if (totalCorrect === totalDefinitions) {
+                    resultsDiv.textContent = `Отлично! Все ${totalCorrect} терминов сопоставлены правильно!`;
+                    resultsDiv.className = 'results success';
+                } else {
+                    resultsDiv.textContent = `Правильно сопоставлено ${totalCorrect} из ${totalDefinitions} терминов. Попробуйте еще раз!`;
+                    resultsDiv.className = 'results';
+                }
+                
+                // Показываем правильные ответы
+                definitions.forEach(def => {
+                    const correctTermId = def.dataset.term;
+                    const matchedTermId = matches[correctTermId];
+                    const matchInfo = def.querySelector('.match-info');
+                    
+                    if (matchedTermId === correctTermId) {
+                        matchInfo.style.color = '#38a169';
+                        matchInfo.style.fontWeight = 'bold';
+                    } else if (matchedTermId) {
+                        matchInfo.style.color = '#e53e3e';
+                        matchInfo.innerHTML += ' <span style="color:#666;font-style:italic">(правильный ответ: ' + getTermName(correctTermId) + ')</span>';
+                    } else {
+                        matchInfo.textContent = 'Не сопоставлено. Правильный ответ: ' + getTermName(correctTermId);
+                        matchInfo.style.color = '#e53e3e';
+                    }
+                });
+            }
+            
+            // Функция получения названия термина по ID
+            function getTermName(id) {
+                const term = document.querySelector(`.term-item[data-id="${id}"]`);
+                return term ? term.textContent.trim() : 'Термин ' + id;
+            }
+            
+            // Функция сброса игры
+            function resetGame() {
+                // Сбрасываем выделение
+                terms.forEach(term => term.classList.remove('selected'));
+                definitions.forEach(def => def.classList.remove('matched'));
+                
+                // Очищаем информацию о сопоставлениях
+                const matchInfoElements = document.querySelectorAll('.match-info');
+                matchInfoElements.forEach(el => {
+                    el.textContent = '';
+                    el.style.color = '';
+                    el.style.fontWeight = '';
+                });
+                
+                // Сбрасываем состояние
+                matches = {};
+                definitions.forEach(def => {
+                    matches[def.dataset.term] = null;
+                });
+                
+                selectedTerm = null;
+                score = 0;
+                scoreSpan.textContent = '0';
+                
+                resultsDiv.style.display = 'none';
+                
+                showHint('Задание сброшено. Начните заново');
+            }
+            
+            // Функция показа подсказки
+            function showHint(message) {
+                // В Stepik можно использовать console.log или создать элемент для подсказок
+                console.log(message);
+            }
+            
+            // Обработчики кнопок
+            checkBtn.addEventListener('click', checkResults);
+            resetBtn.addEventListener('click', resetGame);
+            
+            // Инициализация
+            updateScore();
+            showHint('Выберите термин из левой колонки, затем кликните на соответствующее определение в правой колонке');
+        });
+    </script>
+</body>
+</html>
